@@ -46,6 +46,11 @@ spec:
 {{ toYaml .Values.podLabels | indent 8 }}
 {{- end }}
     spec:
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true
 {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName }}
 {{- end }}
@@ -100,9 +105,13 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         volumeMounts:
+          - mountPath: /.cache
+            name: cache-dir
 {{ include "pomerium.volumeMounts" . | indent 10 }}
       serviceAccountName: {{ template "pomerium.authorize.serviceAccountName" . }}
       volumes:
+        - name: cache-dir
+          emptyDir: {}
 {{ include "pomerium.volumes.shared" . | indent 8 }}
 {{- $ctx := . }}
 {{- $_ := set $ctx "currentServiceName" "authorize" }}

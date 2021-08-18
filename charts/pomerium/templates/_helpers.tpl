@@ -331,9 +331,9 @@ Adapted from : https://github.com/helm/charts/blob/master/stable/drone/templates
 {{/*Expand the port number for secure or insecure mode */}}
 {{- define "pomerium.trafficPort.number" -}}
 {{- if .Values.config.insecure -}}
-80
+8080
 {{- else -}}
-443
+8443
 {{- end -}}
 {{- end -}}
 
@@ -432,7 +432,7 @@ http_redirect_addr: :80
 {{- end }}
 authenticate_service_url: {{ default (printf "https://%s" ( include "pomerium.authenticate.hostname" . ) ) .Values.proxy.authenticateServiceUrl }}
 authorize_service_url: {{ default (printf "%s://%s.%s.svc.cluster.local" (include "pomerium.httpTrafficPort.name" .) (include "pomerium.authorize.fullname" .) .Release.Namespace ) .Values.proxy.authorizeInternalUrl}}
-databroker_service_url: {{ default (printf "%s://%s.%s.svc.cluster.local" (include "pomerium.httpTrafficPort.name" .) (include "pomerium.databroker.fullname" .) .Release.Namespace ) .Values.authenticate.databrokerServiceUrl}}
+databroker_service_url: {{ default (printf "%s://%s.%s.svc.cluster.local:%s" (include "pomerium.httpTrafficPort.name" .) (include "pomerium.databroker.fullname" .) .Release.Namespace (include "pomerium.trafficPort.number" .) ) .Values.authenticate.databrokerServiceUrl}}
 idp_provider: {{ .Values.authenticate.idp.provider }}
 idp_scopes: {{ .Values.authenticate.idp.scopes }}
 idp_provider_url: {{ .Values.authenticate.idp.url }}
